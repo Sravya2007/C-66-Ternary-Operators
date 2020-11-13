@@ -1,8 +1,15 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { Header } from 'react-native-elements';
 import db from './localdb';
-//console.log(db["the"].chunks);
+import PhonicSoundButton from './components/PhonicSoundButton'
 
 export default class App extends React.Component {
   constructor() {
@@ -10,6 +17,7 @@ export default class App extends React.Component {
     this.state = {
       text: '',
       chunks: [],
+      phonicSounds: []
     };
   }
   render() {
@@ -23,7 +31,13 @@ export default class App extends React.Component {
           }}
         />
 
-        <Image style = {styles.imageIcon} source={{ uri: 'https://www.shareicon.net/data/128x128/2015/08/06/80805_face_512x512.png', }}/>
+        <Image
+          style={styles.imageIcon}
+          source={{
+            uri:
+              'https://www.shareicon.net/data/128x128/2015/08/06/80805_face_512x512.png',
+          }}
+        />
 
         <TextInput
           style={styles.inputBox}
@@ -32,19 +46,28 @@ export default class App extends React.Component {
           }}
           value={this.state.text}
         />
+
         <TouchableOpacity
           style={styles.goButton}
           onPress={() => {
             this.setState({ chunks: db[this.state.text].chunks });
+            this.setState({
+              phonicSounds: db[this.state.text].phones
+            })
           }}>
           <Text style={styles.buttonText}>GO</Text>
         </TouchableOpacity>
-          <View>
-            {this.state.chunks.map(item=>{
-              return <TouchableOpacity><Text style = {styles.chunkButton}>{item}</Text></TouchableOpacity>
-            })}
+          <View> 
+          {this.state.chunks.map((item, index) => {
+            return (
+            <PhonicSoundButton
+            wordChunk={this.state.chunks[index]}
+            soundChunk={this.state.phonicSounds[index]}
+            />
+            );
+          })}
           </View>
-      </View>
+        </View>
     );
   }
 }
@@ -55,7 +78,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#b8b8b8',
   },
   inputBox: {
-    marginTop: 100,
+    marginTop: 50,
     width: '80%',
     alignSelf: 'center',
     height: 40,
@@ -74,21 +97,10 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
   },
-  chunkButton: {
-    textAlign: 'center',
-    fontSize: 30,
-    borderWidth: 3,
-    borderRadius: 20,
-    width: 100,
-    alignSelf: 'center',
-    marginTop: 20,
-    backgroundColor: 'purple',
-    color: 'white'
-  },
-  imageIcon:{
+  imageIcon: {
     width: 100,
     height: 100,
-    alignSelf: 'center',
-    marginTop: 30
+    marginTop: 50,
+    alignSelf: 'center'
   }
 });
