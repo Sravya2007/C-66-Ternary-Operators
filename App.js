@@ -6,10 +6,12 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Alert,
+  ScrollView
 } from 'react-native';
 import { Header } from 'react-native-elements';
 import db from './localdb';
-import PhonicSoundButton from './components/PhonicSoundButton'
+import PhonicSoundButton from './components/PhonicSoundButton';
 
 export default class App extends React.Component {
   constructor() {
@@ -17,11 +19,12 @@ export default class App extends React.Component {
     this.state = {
       text: '',
       chunks: [],
-      phonicSounds: []
+      phonicSounds: [],
     };
   }
   render() {
     return (
+      <ScrollView style={styles.container}>
       <View style={styles.container}>
         <Header
           backgroundColor={'#9c8210'}
@@ -46,28 +49,30 @@ export default class App extends React.Component {
           }}
           value={this.state.text}
         />
-
         <TouchableOpacity
           style={styles.goButton}
           onPress={() => {
-            this.setState({ chunks: db[this.state.text].chunks });
-            this.setState({
-              phonicSounds: db[this.state.text].phones
-            })
+            var word = this.state.text.toLowerCase().trim();
+            db[word] ? (
+            this.setState({ chunks: db[word].chunks }),
+            this.setState({ phonicSounds: db[word].phones })
+            ):alert("Sorry, this word does not exist in our database.")
           }}>
           <Text style={styles.buttonText}>GO</Text>
         </TouchableOpacity>
-          <View> 
+        <View>
           {this.state.chunks.map((item, index) => {
             return (
-            <PhonicSoundButton
-            wordChunk={this.state.chunks[index]}
-            soundChunk={this.state.phonicSounds[index]}
-            />
+              <PhonicSoundButton
+                wordChunk={this.state.chunks[index]}
+                soundChunk={this.state.phonicSounds[index]}
+                buttonIndex = {(index)}
+              />
             );
           })}
-          </View>
         </View>
+      </View>
+      </ScrollView>
     );
   }
 }
@@ -98,9 +103,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   imageIcon: {
-    width: 100,
-    height: 100,
-    marginTop: 50,
+    width: 150,
+    height: 150,
     alignSelf: 'center'
   }
 });

@@ -1,31 +1,43 @@
 import * as React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import { Audio } from 'expo-av'
+import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Audio } from 'expo-av';
 
 export default class PhonicSoundButton extends React.Component {
-    playSound = async soundChunk => { 
-      console.log(soundChunk); 
-      var soundLink = 'https://whitehatjrcontent.s3.ap-south-1.amazonaws.com/phones/' + soundChunk + '.mp3'; 
-      await Audio.Sound.createAsync( { uri: soundLink, }, { shouldPlay: true } ); 
-    };
-
+  constructor(props) {
+    super(props);
+    this.state = {
+      pressedButtonIndex: []
+    }
+  }
+  playSound = async soundChunk => {
+    console.log(soundChunk);
+    var soundLink =
+      'https://whitehatjrcontent.s3.ap-south-1.amazonaws.com/phones/' +
+      soundChunk +
+      '.mp3';
+    await Audio.Sound.createAsync(
+      {
+        uri: soundLink,
+      },
+      { shouldPlay: true }
+    );
+  };
   render() {
     return (
-      <TouchableOpacity onPress = {() => {
-        this.playSound(this.props.soundChunk);
-      }} style = {styles.chunkButton}>
-        <Text style = {styles.displayText}>
+      <TouchableOpacity
+        onPress={() => {
+          this.setState({
+            pressedButtonIndex: this.props.buttonIndex
+          })
+          this.playSound(this.props.soundChunk);
+        }} 
+        style = {this.state.pressedButtonIndex === this.props.buttonIndex ? styles.chunk : styles.chunkButton}>
+        <Text 
+          style = {this.state.pressedButtonIndex === this.props.buttonIndex ? [styles.displayText, {color: "black"}] : styles.displayText}>
           {this.props.wordChunk}
         </Text>
       </TouchableOpacity>
-    )
+    );
   }
 }
 
@@ -44,5 +56,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     margin: 5,
     backgroundColor: 'red'
+  },
+  chunk:{
+    width: '60%',
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 10,
+    margin: 5,
+    backgroundColor: 'pink'
   }
-})
+});
